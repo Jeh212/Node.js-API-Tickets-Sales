@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organizer {
+  id          String @id @unique @default(uuid())
+  name        String
+  email       String @unique
+  fantasyName String @unique
+  cnpj        String @unique
+
+  events Event[]
+}
+
+model Event {
+  eventId          String   @id @unique @default(uuid())
+  eventTitle       String   @unique
+  eventDescription String
+  eventDate        DateTime
+
+  eventContact   String
+  eventInstagram String
+  eventFacebook  String
+  activeEvent    Boolean
+
+  eventStreet        String
+  eventAddressNumber String
+  eventCity          String
+  eventState         String
+
+  eventTicketAvailableId Ticket[]
+  organizer              Organizer? @relation(fields: [organizerId], references: [id])
+  organizerId            String
+}
+
+model Ticket {
+  ticketId              String   @id @unique @default(uuid())
+  ticketPrice           Float    @default(0.0)
+  ticketRate            Float    @default(0.0)
+  ticketEventBatch      Int      @default(1)
+  ticketAmountAvailable Int      @default(0)
+  ticketExpireDate      DateTime
+
+  ticketEventRelatedId Event  @relation(fields: [relatedEventId], references: [eventId])
+  relatedEventId       String
+}
+
+model Cart {
+  cartId      String      @id @unique @default(uuid())
+  amountItems Int         @default(0) @db.Integer
+  total       Float       @default(0.0) @db.DoublePrecision
+  active      Boolean     @default(true) @db.Boolean
+  clientId    String
+  createdAt   DateTime    @db.Date
+  updatedAt   DateTime?   @updatedAt
+  cartItems   CartItems[]
+}
+
+model CartItems {
+  itemCartId String @id @unique @default(uuid())
+
+  ticketId    String
+  createdAt   DateTime  @db.Date
+  updatedAt   DateTime? @updatedAt
+  expiredDate DateTime?
+  Cart        Cart?     @relation(fields: [cartCartId], references: [cartId])
+  cartCartId  String?
+}

@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  
+  api-client:
+    build:
+      context: ./api-client
+      dockerfile: Dockerfile
+    container_name: API_CLIENT
+    ports:
+      -  3001:3000
+    volumes:
+      - ./api-client:/usr/app
+
+  postgres-db-01:
+    container_name: POSTGRES_CLIENT_DATABASE
+    image: postgres:14.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: client
+    ports:
+      - "5432:5432"
